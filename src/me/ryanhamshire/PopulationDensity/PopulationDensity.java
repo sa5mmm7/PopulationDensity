@@ -767,6 +767,13 @@ public class PopulationDensity extends JavaPlugin
 
             if (args.length > 0)
             {
+                //looking up other regions reveals their post coordinates, so servers may restrict it
+                if (!player.hasPermission("populationdensity.regionlookup"))
+                {
+                    PopulationDensity.sendMessage(player, TextMode.Err, Messages.NeedRegionLookupPermission);
+                    return true;
+                }
+
                 String requestedName = String.join(" ", args);
                 targetRegion = this.dataStore.getRegionCoordinates(requestedName);
                 if (targetRegion == null)
@@ -803,11 +810,11 @@ public class PopulationDensity extends JavaPlugin
                 PopulationDensity.sendMessage(player, TextMode.Info, Messages.WhichRegion, capitalize(regionName));
             }
 
-            Location postLocation = getRegionCenter(targetRegion, true);
+            //X and Z only, so the target region's chunk doesn't need to be loaded to find the post's height
+            Location postLocation = getRegionCenter(targetRegion, false);
             String locationOwner = args.length == 0 ? "Your" : "The " + capitalize(regionName);
             player.sendMessage(ChatColor.AQUA + locationOwner + " region post can be found at (X: "
-                + Math.round(postLocation.getX()) + ", Y: " + Math.round(postLocation.getY())
-                + ", Z: " + Math.round(postLocation.getZ()) + ").");
+                + postLocation.getBlockX() + ", Z: " + postLocation.getBlockZ() + ").");
 
             return true;
         } else if (cmd.getName().equalsIgnoreCase("listregions"))
@@ -1509,23 +1516,25 @@ public class PopulationDensity extends JavaPlugin
 
     /**
      * Returns the region-post location for a player's assigned region, or null if they do not have one.
+     * Only X and Z are meaningful; Y is the configured minimum region post Y, not the top of the post.
      */
     public Location getAssignedRegionPostLocation(OfflinePlayer player)
     {
         RegionCoordinates assignedRegion = this.getAssignedRegion(player);
         if (assignedRegion == null) return null;
-        return getRegionCenter(assignedRegion, true);
+        return getRegionCenter(assignedRegion, false);
     }
 
     /**
      * Returns the region-post location for a named region, or null if the name is unknown.
+     * Only X and Z are meaningful; Y is the configured minimum region post Y, not the top of the post.
      */
     public Location getRegionPostLocation(String regionName)
     {
         if (regionName == null || this.dataStore == null) return null;
         RegionCoordinates region = this.dataStore.getRegionCoordinates(regionName);
         if (region == null) return null;
-        return getRegionCenter(region, true);
+        return getRegionCenter(region, false);
     }
 
     //determines the center of a region (as a Location) given its region coordinates

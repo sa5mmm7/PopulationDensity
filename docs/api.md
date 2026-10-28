@@ -13,6 +13,8 @@ PopulationDensity populationDensity =
 
 ## Region post locations
 
+All of these methods must be called from the main server thread. They read plugin data that isn't thread-safe.
+
 These methods return the same coordinates that players see with `/whereregion <region name>` and `/myregion`.
 
 ```java
@@ -32,4 +34,11 @@ RegionCoordinates region = populationDensity.getAssignedRegion(player);
 | `getAssignedRegionPostLocation(OfflinePlayer player)` | The `Location` of the post in the player's assigned region, or `null` if they don't have one. |
 | `getAssignedRegion(OfflinePlayer player)` | The `RegionCoordinates` of the player's assigned region, or `null` if they don't have one. |
 
-The returned location is at the region post's X and Z, with Y set to the highest block there. That's normally the top of the post.
+The returned location is at the region post's X and Z. Y is not the height of the post: it's the `MinimumRegionPostY` value from the config, so the methods don't have to load the region's chunk. Use X and Z only, for example as an untracked lodestone compass target:
+
+```java
+CompassMeta meta = (CompassMeta) compass.getItemMeta();
+meta.setLodestone(home);
+meta.setLodestoneTracked(false); // point at the post without needing a lodestone block there
+compass.setItemMeta(meta);
+```

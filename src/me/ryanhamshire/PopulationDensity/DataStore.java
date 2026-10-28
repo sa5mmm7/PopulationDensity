@@ -832,6 +832,7 @@ public class DataStore implements TabCompleter
         this.addDefault(defaults, Messages.UnnamedRegion, "You're in the wilderness!  This region doesn't have a name.", null);
         this.addDefault(defaults, Messages.WhichRegion, "You're in the {0} region.", null);
         this.addDefault(defaults, Messages.NoAssignedRegion, "You don't have an assigned region yet.", null);
+        this.addDefault(defaults, Messages.NeedRegionLookupPermission, "You don't have permission to look up other regions.", null);
         this.addDefault(defaults, Messages.AssignedUnnamedRegion, "Your assigned region is unnamed.", null);
         this.addDefault(defaults, Messages.AssignedRegion, "Your assigned region is {0}.", null);
         this.addDefault(defaults, Messages.RegionNamesNoSpaces, "Region names may not include spaces.", null);
@@ -944,6 +945,12 @@ public class DataStore implements TabCompleter
         Validate.notNull(args, "Arguments cannot be null");
         Validate.notNull(alias, "Alias cannot be null");
         if (args.length == 0)
+        {
+            return ImmutableList.of();
+        }
+
+        //don't list region names to players who can't look them up
+        if (command.getName().equalsIgnoreCase("myregion") && !sender.hasPermission("populationdensity.regionlookup"))
         {
             return ImmutableList.of();
         }

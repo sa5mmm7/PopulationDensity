@@ -39,6 +39,7 @@ public enum Messages
     UnnamedRegion,
     WhichRegion,
     NoAssignedRegion,
+    NeedRegionLookupPermission,
     AssignedUnnamedRegion,
     AssignedRegion,
     RegionNamesNoSpaces,
