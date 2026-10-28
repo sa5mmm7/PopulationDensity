@@ -27,6 +27,10 @@ commands:
    whichregion:
       description: Tells the player which region he's in, and the coordinates of the region post.
       usage: /WhichRegion
+   myregion:
+      description: Tells the player their assigned region, or a named region, and its post coordinates.
+      usage: /MyRegion [region name]
+      aliases: [whereregion, assignedregion]
    newestregion:
       description: Teleports the player to the newest region.
       usage: /newestregion
